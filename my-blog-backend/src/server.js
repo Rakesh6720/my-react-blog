@@ -1,5 +1,6 @@
 import express from "express";
 import bodyParser from "body-parser";
+import path from "path";
 
 const mongoConnect = require("../util/database").mongoConnect;
 const getDb = require("../util/database").getDb;
@@ -7,6 +8,7 @@ const Article = require("../models/article");
 
 const app = express();
 
+app.use(express.static(path.join(__dirname, "/build")));
 app.use(bodyParser.json());
 
 //const db = getDb();
@@ -58,6 +60,10 @@ app.post("/api/articles/:name/add-comment", async (req, res) => {
   const updatedArticle = await Article.fetch(articleName);
 
   res.status(200).json(updatedArticle);
+});
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname + "/build/index.html"));
 });
 
 mongoConnect(() => {
